@@ -110,10 +110,8 @@ DWORD_PTR GetModuleBaseAddress(DWORD processID)
 				}
 			}
 		}
-
 		CloseHandle(processHandle);
 	}
-
 	return baseAddress;
 }
 
@@ -143,7 +141,6 @@ DWORD readPointerChain(HANDLE handle, DWORD baseAddr, int pLevel, DWORD offsets[
 
 
 int main() {
-
 	HWND hwnd = FindWindow(NULL, "Kindle");
 	int readTest = 0;
 	int totalLocations = 0;
@@ -173,13 +170,11 @@ int main() {
 			BringKindleToFront(); //bring kindle to front so we can get title of window
 			HWND kindleHWND = getKindleHWND(); //get the hwnd of front window
 
-
 			string windowTitle = GetKindleWindowTitle(kindleHWND); //window title
 			string bookTitle = GetKindleBookTitle(windowTitle); // book title from window title
 
 			cout << "Window Title: " << windowTitle << endl;
 			cout << "Book Title: " << bookTitle << endl;
-
 
 			DWORD baseOffset = 0x031BE1DC;
 			DWORD baseOffsetTotalPages = 0x0321E3B0;
@@ -209,7 +204,6 @@ int main() {
 					bookTitle = GetKindleBookTitle(windowTitle); // book title
 				}
 
-
 				cout << "final address: " << hex << addr << endl;
 				cout << "base address total: " << hex << addrTotal << endl;
 				cout << "Window Title: " << windowTitle << endl;
@@ -231,7 +225,5 @@ int main() {
 			}
 		}
 	}
-
-
 	return 0;
 }
