@@ -10,7 +10,13 @@
 using namespace std;
 
 //forward declarations
-DWORD GetModuleBaseAddress(DWORD dwProcessIdentifier, TCHAR *lpszModuleName);
+int GetWindowString(HWND hwnd, string &s);
+BOOL CALLBACK FindWindowBySubstr(HWND hwnd, LPARAM substring);
+HWND getKindleHWND();
+void BringKindleToFront();
+string GetKindleWindowTitle(HWND window);
+string GetKindleBookTitle(string s);
+DWORD_PTR GetModuleBaseAddress(DWORD processID);
 DWORD readPointerChain(HANDLE handle, DWORD baseAddr, int pLevel, DWORD offsets[]);
 //------------------------------------------------
 
@@ -52,7 +58,7 @@ BOOL CALLBACK FindWindowBySubstr(HWND hwnd, LPARAM substring)
 
 void BringKindleToFront()
 {
-	const TCHAR substring[] = TEXT("Kindle for PC");
+	const TCHAR substring[] = TEXT("Kindle for PC"); //TODO - make this a general use function you lazy ass
 	EnumWindows(FindWindowBySubstr, (LPARAM)substring); // opens kindle to forefront upon finding it
 }
 
