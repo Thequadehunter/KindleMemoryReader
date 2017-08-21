@@ -24,8 +24,8 @@ int GetWindowString(HWND hwnd, string &s)
 {
 	char buffer[65536];
 
-	int txtlen = GetWindowTextLength(hwnd) + 1;
-	GetWindowText(hwnd, buffer, txtlen);
+	int txtlen = GetWindowTextLength(hwnd) + 1; //idk why this works like this it just does
+	GetWindowText(hwnd, buffer, txtlen); //read window text into char buffer
 
 	s = buffer;
 	return txtlen;
@@ -36,12 +36,6 @@ BOOL CALLBACK FindWindowBySubstr(HWND hwnd, LPARAM substring)
 	const DWORD TITLE_SIZE = 1024;
 	TCHAR windowTitle[TITLE_SIZE];
 
-	char buffer[65536];
-
-	GetWindowText(hwnd, buffer, TITLE_SIZE); // read into buffer
-
-	string s = buffer;
-
 	if (GetWindowText(hwnd, windowTitle, TITLE_SIZE))
 	{
 		_tprintf(TEXT("%s\n"), windowTitle);
@@ -49,7 +43,7 @@ BOOL CALLBACK FindWindowBySubstr(HWND hwnd, LPARAM substring)
 		if (_tcsstr(windowTitle, LPCTSTR(substring)) != NULL)
 		{
 			// We found the window! Stop enumerating. 
-			SwitchToThisWindow(hwnd, true);
+			SwitchToThisWindow(hwnd, true); //bring it to front so we can get title of window
 			return false;
 		}
 	}
@@ -71,7 +65,7 @@ HWND getKindleHWND()
 string GetKindleWindowTitle(HWND window)
 {
 	string s;
-	int len = GetWindowString(window, s);
+	int len = GetWindowString(window, s); //read window name into s
 	return s;
 }
 
@@ -94,7 +88,7 @@ DWORD_PTR GetModuleBaseAddress(DWORD processID)
 
 	if (processHandle)
 	{
-		if (EnumProcessModules(processHandle, NULL, 0, &bytesRequired))
+		if (EnumProcessModules(processHandle, NULL, 0, &bytesRequired)) //go through list of handles
 		{
 			if (bytesRequired)
 			{
@@ -127,7 +121,7 @@ DWORD_PTR GetModuleBaseAddress(DWORD processID)
 DWORD readPointerChain(HANDLE handle, DWORD baseAddr, int pLevel, DWORD offsets[])
 {
 	DWORD address = baseAddr;
-	DWORD pTemp; //MUST READ VALUES
+	DWORD pTemp; //MUST READ VALUES INTO THIS
 
 	for (int i = 0; i < pLevel; i++)
 	{
@@ -191,20 +185,17 @@ int main() {
 			DWORD baseOffsetTotalPages = 0x0321E3B0;
 			DWORD offsets[5] = { 0x1C, 0xC, 0xCC, 0x158, 0x18 };
 			DWORD totalPagesOffsets[5] = { 0x34, 0x120, 0x10, 0x4, 0x30 };
-			baseAddr = (DWORD)baseAddr + (DWORD)baseOffset;
 			DWORD baseAddrTotal = (DWORD)baseAddr + (DWORD)baseOffsetTotalPages;
 			DWORD addr = readPointerChain(handle, baseAddr, 5, offsets);
 			DWORD addrTotal = readPointerChain(handle, baseAddrTotal, 5, totalPagesOffsets);
 
-			for (;;)
+			for (;;) //infinite loop
 			{
-				DWORD baseAddr = GetModuleBaseAddress(procID); //get base address of selected window - MUST DO THIS EVERY TIME
+				baseAddr = GetModuleBaseAddress(procID); //get base address of kindle - MUST DO THIS EVERY TIME
 				cout << "base address: " << hex << (DWORD)baseAddr << endl;
 				baseAddr = (DWORD)baseAddr + (DWORD)baseOffset;
 
-
-				DWORD baseAddrBottom = GetModuleBaseAddress(procID);
-
+				DWORD baseAddrBottom = GetModuleBaseAddress(procID); //reset base address
 
 				baseAddrTotal = (DWORD)baseAddrBottom + (DWORD)baseOffsetTotalPages;
 				DWORD addr = readPointerChain(handle, baseAddr, 5, offsets);
@@ -212,7 +203,7 @@ int main() {
 
 				kindleHWND = getKindleHWND(); // get current window again
 
-				if (GetKindleWindowTitle(kindleHWND).find("Kindle for PC") != string::npos)
+				if (GetKindleWindowTitle(kindleHWND).find("Kindle for PC") != string::npos) //if kindle window is being used
 				{
 					windowTitle = GetKindleWindowTitle(kindleHWND); //window title
 					bookTitle = GetKindleBookTitle(windowTitle); // book title
