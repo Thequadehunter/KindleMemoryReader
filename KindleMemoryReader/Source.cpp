@@ -20,6 +20,9 @@ DWORD_PTR GetModuleBaseAddress(DWORD processID);
 DWORD readPointerChain(HANDLE handle, DWORD baseAddr, int pLevel, DWORD offsets[]);
 //------------------------------------------------
 
+
+//TODO: fix dumb variable names
+
 int GetWindowString(HWND hwnd, string &s)
 {
 	char buffer[65536];
@@ -156,7 +159,7 @@ int main() {
 	{
 		DWORD procID;
 		GetWindowThreadProcessId(hwnd, &procID);
-		DWORD baseAddr = GetModuleBaseAddress(procID); //get base address of selected window
+		DWORD baseAddr = GetModuleBaseAddress(procID); //get base address of kindle.exe
 		HANDLE handle = OpenProcess(PROCESS_ALL_ACCESS, FALSE, procID);
 
 		if (procID == NULL)
@@ -176,10 +179,10 @@ int main() {
 			cout << "Window Title: " << windowTitle << endl;
 			cout << "Book Title: " << bookTitle << endl;
 
-			DWORD baseOffset = 0x031BE1DC;
-			DWORD baseOffsetTotalPages = 0x0321E3B0;
-			DWORD offsets[5] = { 0x1C, 0xC, 0xCC, 0x158, 0x18 };
-			DWORD totalPagesOffsets[5] = { 0x34, 0x120, 0x10, 0x4, 0x30 };
+			DWORD baseOffset = 0x031BE1DC; //base offset of kindle for current location (kindle.exe + 0x031BE1DC)
+			DWORD baseOffsetTotalPages = 0x0321E3B0; //base offset for max pages (kindle.exe + 0x0321E3B0)
+			DWORD offsets[5] = { 0x1C, 0xC, 0xCC, 0x158, 0x18 }; //current location pointers
+			DWORD totalPagesOffsets[5] = { 0x34, 0x120, 0x10, 0x4, 0x30 }; //max location pointers
 			DWORD baseAddrTotal = (DWORD)baseAddr + (DWORD)baseOffsetTotalPages;
 			DWORD addr = readPointerChain(handle, baseAddr, 5, offsets);
 			DWORD addrTotal = readPointerChain(handle, baseAddrTotal, 5, totalPagesOffsets);
